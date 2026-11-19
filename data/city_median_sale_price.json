@@ -1,0 +1,98 @@
+{
+  "source": "data/college_town_home_sales.csv",
+  "rule": "Sales with sale_price of $10,000 or more",
+  "rows_in_source": 35442,
+  "rows_used": 35402,
+  "cities": [
+    {
+      "city": "Davis",
+      "median_sale_price": 889000,
+      "sales": 941
+    },
+    {
+      "city": "Pittsboro",
+      "median_sale_price": 876985,
+      "sales": 92
+    },
+    {
+      "city": "Chapel Hill",
+      "median_sale_price": 735000,
+      "sales": 2713
+    },
+    {
+      "city": "Charlottesville",
+      "median_sale_price": 615000,
+      "sales": 2774
+    },
+    {
+      "city": "Middleton",
+      "median_sale_price": 611000,
+      "sales": 645
+    },
+    {
+      "city": "Carrboro",
+      "median_sale_price": 605000,
+      "sales": 205
+    },
+    {
+      "city": "Ann Arbor",
+      "median_sale_price": 572000,
+      "sales": 3009
+    },
+    {
+      "city": "Newberry",
+      "median_sale_price": 439995,
+      "sales": 152
+    },
+    {
+      "city": "State College",
+      "median_sale_price": 430000,
+      "sales": 1348
+    },
+    {
+      "city": "Madison",
+      "median_sale_price": 421000,
+      "sales": 5061
+    },
+    {
+      "city": "Savoy",
+      "median_sale_price": 402700,
+      "sales": 247
+    },
+    {
+      "city": "West Lafayette",
+      "median_sale_price": 379900,
+      "sales": 1559
+    },
+    {
+      "city": "Athens",
+      "median_sale_price": 370000,
+      "sales": 2809
+    },
+    {
+      "city": "Gainesville",
+      "median_sale_price": 350000,
+      "sales": 5469
+    },
+    {
+      "city": "Iowa City",
+      "median_sale_price": 342000,
+      "sales": 1909
+    },
+    {
+      "city": "Lafayette",
+      "median_sale_price": 260000,
+      "sales": 3053
+    },
+    {
+      "city": "Champaign",
+      "median_sale_price": 240000,
+      "sales": 2285
+    },
+    {
+      "city": "Urbana",
+      "median_sale_price": 229900,
+      "sales": 1131
+    }
+  ]
+}

@@ -1,31 +1,137 @@
 <!DOCTYPE html>
-<!-- A placeholder from the Home Sales template. Replace this file with your site's first page. -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Under construction</title>
+  <title>Median sale price by city</title>
   <!-- An empty icon, so the browser doesn't log an error looking for favicon.ico -->
   <link rel="icon" href="data:,">
   <style>
-    :root { color-scheme: light dark; }
+    :root {
+      color-scheme: light dark;
+      --bar: #2f6f9f;
+      --muted: #6b6b6b;
+      --track: rgba(127, 127, 127, 0.15);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bar: #7fb3dd;
+        --muted: #a8a8a8;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bar: #7fb3dd;
+      --muted: #a8a8a8;
+    }
     body {
-      max-width: 40rem;
+      background: Canvas;
+      color: CanvasText;
+      max-width: 52rem;
       margin: 0 auto;
       padding: 3rem 1rem;
       font-family: system-ui, sans-serif;
       line-height: 1.5;
     }
+    h1 { font-size: 1.75rem; margin: 0 0 0.25rem; }
+    .lede { color: var(--muted); margin: 0 0 2rem; }
+    .chart-title { font-size: 1.15rem; margin: 0 0 0.25rem; }
+    .chart-note { color: var(--muted); font-size: 0.9rem; margin: 0 0 1rem; }
+    .bars { list-style: none; margin: 0; padding: 0; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(7rem, 11rem) 1fr minmax(4.5rem, auto);
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+    .bar-label { font-size: 0.95rem; overflow-wrap: anywhere; }
+    .bar-track {
+      background: var(--track);
+      border-radius: 3px;
+      height: 1.1rem;
+      overflow: hidden;
+    }
+    .bar-fill {
+      background: var(--bar);
+      height: 100%;
+      border-radius: 3px;
+      min-width: 2px;
+    }
+    .bar-value { font-variant-numeric: tabular-nums; font-size: 0.95rem; text-align: right; }
+    .status { color: var(--muted); }
     footer { margin-top: 3rem; font-size: 0.875rem; opacity: 0.75; }
   </style>
 </head>
 <body>
   <main>
-    <h1>This site is under construction</h1>
-    <p>It will show findings from the College-town home sales dataset.</p>
+    <h1>Median sale price by city</h1>
+    <p class="lede">College-town home sales, 18 cities and towns.</p>
+
+    <section aria-labelledby="chart-heading">
+      <h2 id="chart-heading" class="chart-title">Median sale price, by city</h2>
+      <p class="chart-note" id="chart-rule">Counts only sales of $10,000 or more.</p>
+      <p class="status" id="chart-status">Loading chart…</p>
+      <ol class="bars" id="city-bars" aria-labelledby="chart-heading"></ol>
+    </section>
   </main>
   <footer>
     <p>Data: College-town home sales dataset, version 1.0 (2026). University of Illinois-Deloitte Foundation Center for Business Emerging Technologies. Data collected March 2026.</p>
   </footer>
+  <script>
+    (function () {
+      var list = document.getElementById("city-bars");
+      var status = document.getElementById("chart-status");
+      var rule = document.getElementById("chart-rule");
+
+      function money(n) {
+        return "$" + n.toLocaleString("en-US");
+      }
+
+      function draw(data) {
+        var cities = data.cities;
+        var max = Math.max.apply(null, cities.map(function (c) { return c.median_sale_price; }));
+        rule.textContent = "Counts only " + data.rule.replace("Sales with sale_price of ", "") + ". " +
+          data.rows_used.toLocaleString("en-US") + " of " + data.rows_in_source.toLocaleString("en-US") +
+          " rows used. Bars are sorted from highest to lowest median.";
+        cities.forEach(function (c) {
+          var li = document.createElement("li");
+          li.className = "bar-row";
+          li.title = c.city + ": median " + money(c.median_sale_price) + " from " + c.sales.toLocaleString("en-US") + " sales";
+
+          var label = document.createElement("span");
+          label.className = "bar-label";
+          label.textContent = c.city;
+
+          var track = document.createElement("span");
+          track.className = "bar-track";
+          var fill = document.createElement("span");
+          fill.className = "bar-fill";
+          fill.style.display = "block";
+          fill.style.width = ((c.median_sale_price / max) * 100).toFixed(2) + "%";
+          track.appendChild(fill);
+
+          var value = document.createElement("span");
+          value.className = "bar-value";
+          value.textContent = money(c.median_sale_price);
+
+          li.appendChild(label);
+          li.appendChild(track);
+          li.appendChild(value);
+          list.appendChild(li);
+        });
+        status.remove();
+      }
+
+      fetch("data/city_median_sale_price.json")
+        .then(function (r) {
+          if (!r.ok) { throw new Error("HTTP " + r.status); }
+          return r.json();
+        })
+        .then(draw)
+        .catch(function () {
+          status.textContent = "The chart data could not be loaded.";
+        });
+    })();
+  </script>
 </body>
 </html>
