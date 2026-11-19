@@ -73,6 +73,13 @@
       <p class="status" id="chart-status">Loading chart…</p>
       <ol class="bars" id="city-bars" aria-labelledby="chart-heading"></ol>
     </section>
+
+    <section aria-labelledby="low-heading">
+      <h2 id="low-heading" class="chart-title">The 10 lowest median sale prices</h2>
+      <p class="chart-note">The 10 cities with the lowest medians, from the same data and rule as the chart above. Both charts use the same scale.</p>
+      <p class="status" id="low-status">Loading chart…</p>
+      <ol class="bars" id="low-bars" aria-labelledby="low-heading"></ol>
+    </section>
   </main>
   <footer>
     <p>Data: College-town home sales dataset, version 1.0 (2026). University of Illinois-Deloitte Foundation Center for Business Emerging Technologies. Data collected March 2026.</p>
@@ -82,17 +89,14 @@
       var list = document.getElementById("city-bars");
       var status = document.getElementById("chart-status");
       var rule = document.getElementById("chart-rule");
+      var lowList = document.getElementById("low-bars");
+      var lowStatus = document.getElementById("low-status");
 
       function money(n) {
         return "$" + n.toLocaleString("en-US");
       }
 
-      function draw(data) {
-        var cities = data.cities;
-        var max = Math.max.apply(null, cities.map(function (c) { return c.median_sale_price; }));
-        rule.textContent = "Counts only " + data.rule.replace("Sales with sale_price of ", "") + ". " +
-          data.rows_used.toLocaleString("en-US") + " of " + data.rows_in_source.toLocaleString("en-US") +
-          " rows used. Bars are sorted from highest to lowest median.";
+      function renderBars(target, cities, max) {
         cities.forEach(function (c) {
           var li = document.createElement("li");
           li.className = "bar-row";
@@ -117,9 +121,24 @@
           li.appendChild(label);
           li.appendChild(track);
           li.appendChild(value);
-          list.appendChild(li);
+          target.appendChild(li);
         });
+      }
+
+      function draw(data) {
+        var cities = data.cities;
+        var max = Math.max.apply(null, cities.map(function (c) { return c.median_sale_price; }));
+        rule.textContent = "Counts only " + data.rule.replace("Sales with sale_price of ", "") + ". " +
+          data.rows_used.toLocaleString("en-US") + " of " + data.rows_in_source.toLocaleString("en-US") +
+          " rows used. Bars are sorted from highest to lowest median.";
+        renderBars(list, cities, max);
         status.remove();
+
+        var lowest = cities.slice().sort(function (a, b) {
+          return a.median_sale_price - b.median_sale_price;
+        }).slice(0, 10);
+        renderBars(lowList, lowest, max);
+        lowStatus.remove();
       }
 
       fetch("data/city_median_sale_price.json")
@@ -130,6 +149,7 @@
         .then(draw)
         .catch(function () {
           status.textContent = "The chart data could not be loaded.";
+          lowStatus.textContent = "The chart data could not be loaded.";
         });
     })();
   </script>
